@@ -1,0 +1,19 @@
+{
+  "name": "lifepub",
+  "version": "1.0.0",
+  "description": "",
+  "main": "lifePub.js",
+  "scripts": {
+    "start": "node lifePub.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "mongoose": "^8.7.3",
+    "mqtt": "^5.10.1"
+  }
+}
