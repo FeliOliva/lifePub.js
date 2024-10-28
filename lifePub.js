@@ -242,9 +242,11 @@ function verificarYPublicarEstado() {
     client.publish(lifeTopic, JSON.stringify({ estado }));
     console.log("Estado actualizado a:", estado);
   }
-
+  const estadoPasar = {
+    estado: estado,
+  };
   // Publicar los datos actualizados
-  client.publish(lifeTopic, JSON.stringify(estado));
+  client.publish(lifeTopic, JSON.stringify(estadoPasar));
 }
 
 // Endpoint para iniciar o detener el contador de vida
