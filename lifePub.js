@@ -111,6 +111,7 @@ client.on("message", async (topic, message) => {
       Luz: newLight,
       Temp: newTemperature,
     } = parsedMessage;
+    console.log(newHumidity, newLight, newTemperature);
 
     if (newHumidity !== Hum || newLight !== Luz || newTemperature !== Temp) {
       Hum = newHumidity || 0;
@@ -194,9 +195,9 @@ function verificarYPublicarEstado() {
     waterAmount: waterAmount || 0,
     foodAmount: foodAmount || 0,
     happyAmount: happyAmount || 0,
-    temperature: temperature || 0,
-    humidity: humidity || 0,
-    light: light || 0,
+    temperature: Temp || 0,
+    humidity: Hum || 0,
+    light: Luz || 0,
     estado,
   };
 
@@ -210,13 +211,13 @@ function verificarYPublicarEstado() {
   if (happyAmount < umbralFelicidad) {
     estados.push(3); // Está aburrido
   }
-  if (temperature > umbralCalor) {
+  if (Temp > umbralCalor) {
     estados.push(4); // Está sofocado por calor
   }
-  if (light < umbralSuenio) {
+  if (Luz < umbralSuenio) {
     estados.push(5); // Tiene sueño por baja iluminación
   }
-  if (humidity > umbralHumedad) {
+  if (Hum > umbralHumedad) {
     estados.push(6); // Incómodo por humedad alta
   }
   if (foodAmount >= 99) {
