@@ -5,8 +5,9 @@ const cors = require("cors");
 const Data = require("./models/DataModel"); // Ajusta la ruta según tu estructura de archivos
 const mongoose = require("mongoose");
 
-mongoose.connect(process.env.MONGODB_URI, {
-}).then(() => console.log("Conexión exitosa a MongoDB"))
+mongoose
+  .connect(process.env.MONGODB_URI, {})
+  .then(() => console.log("Conexión exitosa a MongoDB"))
   .catch((error) => console.error("Error al conectar a MongoDB:", error));
 
 const app = express();
@@ -29,7 +30,7 @@ const client = mqtt.connect({
 const lifeTopic = "life";
 const necesidadesTopic = "necesidades";
 const happyTopic = "happy";
-const dataTopic = "data";
+const dataTopic = "canal";
 const revivirTopic = "revivir";
 
 let puntosVida = 100;
@@ -105,22 +106,31 @@ client.on("message", async (topic, message) => {
   }
 
   if (topic === dataTopic && personajeVivo && !processing) {
-    const { humidity: newHumidity, light: newLight, temperature: newTemperature } = parsedMessage;
+    const {
+      Hum: newHumidity,
+      Luz: newLight,
+      Temp: newTemperature,
+    } = parsedMessage;
 
-    if (newHumidity !== humidity || newLight !== light || newTemperature !== temperature) {
-      humidity = newHumidity || 0;
-      light = newLight || 0;
-      temperature = newTemperature || 0;
+    if (newHumidity !== Hum || newLight !== Luz || newTemperature !== Temp) {
+      Hum = newHumidity || 0;
+      Luz = newLight || 0;
+      Temp = newTemperature || 0;
 
       try {
         const newData = new Data({
-          temperature,
-          humidity,
-          light,
+          Temp,
+          Hum,
+          Luz,
           estado, // El estado actual del personaje
         });
         await newData.save(); // Guardado en MongoDB
-        console.log("Datos guardados en MongoDB:", { temperature, humidity, light, estado });
+        console.log("Datos guardados en MongoDB:", {
+          Temp,
+          Hum,
+          Luz,
+          estado,
+        });
       } catch (error) {
         console.error("Error al guardar datos en MongoDB:", error);
       }
@@ -245,7 +255,6 @@ app.get("/iniciar", (req, res) => {
     iniciarDescuentoDeVida();
     console.log("El contador de vida ha comenzado.");
     res.send("Contador iniciado.");
-
   } else if (ok === "false" && iniciado) {
     // Detener el contador y reiniciar valores
     clearInterval(vidaInterval);
@@ -264,15 +273,14 @@ app.get("/iniciar", (req, res) => {
       waterAmount,
       foodAmount,
       happyAmount,
-      temperature,
-      humidity,
-      light,
+      Temp,
+      Hum,
+      Luz,
       estado,
     };
 
     console.log("El contador de vida ha sido detenido y reiniciado.");
     res.send("Contador detenido y valores reiniciados.");
-
   } else {
     res.send("Solicitud no válida o ya está en el estado solicitado.");
   }
@@ -294,15 +302,19 @@ app.get("/matar", (req, res) => {
       waterAmount,
       foodAmount,
       happyAmount,
-      temperature,
-      humidity,
-      light,
+      Temp,
+      Hum,
+      Luz,
       estado,
     };
 
-    console.log("El personaje ha muerto. Todas las estadísticas se han puesto en 0.");
+    console.log(
+      "El personaje ha muerto. Todas las estadísticas se han puesto en 0."
+    );
     client.publish(lifeTopic, JSON.stringify(currentState));
-    res.send("El personaje ha sido matado y todas las estadísticas se han puesto en 0.");
+    res.send(
+      "El personaje ha sido matado y todas las estadísticas se han puesto en 0."
+    );
   } else {
     res.send("Solicitud no válida.");
   }
@@ -312,7 +324,6 @@ app.get("/estado", (req, res) => {
 });
 
 module.exports = app;
-
 
 client.on("error", (error) => {
   console.error("Connection error: ", error);
