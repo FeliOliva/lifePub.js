@@ -244,7 +244,7 @@ function verificarYPublicarEstado() {
   }
 
   // Publicar los datos actualizados
-  // client.publish(lifeTopic, JSON.stringify(currentState));
+  client.publish(lifeTopic, JSON.stringify(estado));
 }
 
 // Endpoint para iniciar o detener el contador de vida
