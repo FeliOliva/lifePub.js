@@ -37,9 +37,9 @@ let puntosVida = 100;
 let waterAmount = 100;
 let foodAmount = 100;
 let happyAmount = 53;
-let temperature;
-let humidity;
-let light;
+let Temp;
+let Hum;
+let Luz;
 let personajeVivo = true;
 let estado = 0;
 let vidaInterval = null;
@@ -58,9 +58,9 @@ let currentState = {
   waterAmount,
   foodAmount,
   happyAmount,
-  temperature,
-  humidity,
-  light,
+  Temp,
+  Hum,
+  Luz,
 };
 
 let processing = false; // Bloqueo para evitar procesamiento simultáneo
