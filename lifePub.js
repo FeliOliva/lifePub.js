@@ -277,6 +277,36 @@ app.get("/iniciar", (req, res) => {
     res.send("Solicitud no válida o ya está en el estado solicitado.");
   }
 });
+app.get("/matar", (req, res) => {
+  const { kill } = req.query;
+  if (kill === "true") {
+    personajeVivo = false;
+
+    // Reiniciar estadísticas al morir
+    puntosVida = 0;
+    waterAmount = 0;
+    foodAmount = 0;
+    happyAmount = 0;
+
+    estado = 8;
+    currentState = {
+      puntosVida,
+      waterAmount,
+      foodAmount,
+      happyAmount,
+      temperature,
+      humidity,
+      light,
+      estado,
+    };
+
+    console.log("El personaje ha muerto. Todas las estadísticas se han puesto en 0.");
+    client.publish(lifeTopic, JSON.stringify(currentState));
+    res.send("El personaje ha sido matado y todas las estadísticas se han puesto en 0.");
+  } else {
+    res.send("Solicitud no válida.");
+  }
+});
 app.get("/estado", (req, res) => {
   res.json(currentState);
 });
