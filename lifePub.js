@@ -30,16 +30,16 @@ const client = mqtt.connect({
 const lifeTopic = "life";
 const necesidadesTopic = "necesidades";
 const happyTopic = "happy";
-const dataTopic = "canal";
+const dataTopic = "sensor";
 const revivirTopic = "revivir";
 
 let puntosVida = 100;
 let waterAmount = 100;
 let foodAmount = 100;
 let happyAmount = 53;
-let Temp;
-let Hum;
-let Luz;
+let temperatura;
+let humedad;
+let ldr;
 let personajeVivo = true;
 let estado = 0;
 let vidaInterval = null;
@@ -58,9 +58,9 @@ let currentState = {
   waterAmount,
   foodAmount,
   happyAmount,
-  Temp,
-  Hum,
-  Luz,
+  temperatura,
+  humedad,
+  ldr,
 };
 
 let processing = false; // Bloqueo para evitar procesamiento simultáneo
@@ -107,29 +107,33 @@ client.on("message", async (topic, message) => {
 
   if (topic === dataTopic && personajeVivo && !processing) {
     const {
-      Hum: newHumidity,
-      Luz: newLight,
-      Temp: newTemperature,
+      humedad: newHumidity,
+      ldr: newLight,
+      temperatura: newTemperature,
     } = parsedMessage;
     console.log(newHumidity, newLight, newTemperature);
 
-    if (newHumidity !== Hum || newLight !== Luz || newTemperature !== Temp) {
-      Hum = newHumidity || 0;
-      Luz = newLight || 0;
-      Temp = newTemperature || 0;
+    if (
+      newHumidity !== humedad ||
+      newLight !== ldr ||
+      newTemperature !== temperatura
+    ) {
+      humedad = newHumidity || 0;
+      ldr = newLight || 0;
+      temperatura = newTemperature || 0;
 
       try {
         const newData = new Data({
-          Temp,
-          Hum,
-          Luz,
+          temperatura,
+          humedad,
+          ldr,
           estado, // El estado actual del personaje
         });
         await newData.save(); // Guardado en MongoDB
         console.log("Datos guardados en MongoDB:", {
-          Temp,
-          Hum,
-          Luz,
+          temperatura,
+          humedad,
+          ldr,
           estado,
         });
       } catch (error) {
@@ -195,9 +199,9 @@ function verificarYPublicarEstado() {
     waterAmount: waterAmount || 0,
     foodAmount: foodAmount || 0,
     happyAmount: happyAmount || 0,
-    temperature: Temp || 0,
-    humidity: Hum || 0,
-    light: Luz || 0,
+    temperature: temperatura || 0,
+    humidity: humedad || 0,
+    light: ldr || 0,
     estado,
   };
 
@@ -211,13 +215,13 @@ function verificarYPublicarEstado() {
   if (happyAmount < umbralFelicidad) {
     estados.push(3); // Está aburrido
   }
-  if (Temp > umbralCalor) {
+  if (temperatura > umbralCalor) {
     estados.push(4); // Está sofocado por calor
   }
-  if (Luz < umbralSuenio) {
+  if (ldr < umbralSuenio) {
     estados.push(5); // Tiene sueño por baja iluminación
   }
-  if (Hum > umbralHumedad) {
+  if (humedad > umbralHumedad) {
     estados.push(6); // Incómodo por humedad alta
   }
   if (foodAmount >= 99) {
@@ -276,9 +280,9 @@ app.get("/iniciar", (req, res) => {
       waterAmount,
       foodAmount,
       happyAmount,
-      Temp,
-      Hum,
-      Luz,
+      temperatura,
+      humedad,
+      ldr,
       estado,
     };
 
@@ -305,9 +309,9 @@ app.get("/matar", (req, res) => {
       waterAmount,
       foodAmount,
       happyAmount,
-      Temp,
-      Hum,
-      Luz,
+      temperatura,
+      humedad,
+      ldr,
       estado,
     };
 
