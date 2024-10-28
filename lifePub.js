@@ -281,9 +281,8 @@ app.get("/estado", (req, res) => {
   res.json(currentState);
 });
 
-app.listen(port, () => {
-  console.log(`API escuchando en http://localhost:${port}`);
-});
+module.exports = app;
+
 
 client.on("error", (error) => {
   console.error("Connection error: ", error);
